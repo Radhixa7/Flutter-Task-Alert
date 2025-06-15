@@ -31,16 +31,63 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Method untuk toggle status tugas - digunakan di TaskScreen
   void toggleTaskStatus(String id) {
     final task = _taskBox.get(id);
     if (task != null) {
       task.isDone = !task.isDone;
       task.save(); // penting agar perubahan disimpan
+      
+      // Update notifikasi berdasarkan status baru
+      if (task.isDone) {
+        _cancelNotifications(id); // Batalkan notifikasi jika tugas selesai
+      } else {
+        _scheduleNotifications(task); // Jadwalkan ulang jika tugas dibuka kembali
+      }
+      
       notifyListeners();
     }
   }
 
+  // Alternative method yang kompatibel dengan TaskScreen
+  void toggleTaskCompletion(String id) {
+    toggleTaskStatus(id);
+  }
+
+  // Method untuk mendapatkan task berdasarkan ID
+  Task? getTaskById(String id) {
+    return _taskBox.get(id);
+  }
+
+  // Method untuk mendapatkan tasks berdasarkan status
+  List<Task> getTasksByStatus(bool isDone) {
+    return tasks.where((task) => task.isDone == isDone).toList();
+  }
+
+  // Method untuk mendapatkan tasks berdasarkan prioritas
+  List<Task> getTasksByPriority(String priority) {
+    return tasks.where((task) => task.priority == priority).toList();
+  }
+
+  // Method untuk mendapatkan statistik
+  Map<String, int> getTaskStatistics() {
+    final allTasks = tasks;
+    return {
+      'total': allTasks.length,
+      'completed': allTasks.where((task) => task.isDone).length,
+      'pending': allTasks.where((task) => !task.isDone).length,
+      'high_priority': allTasks.where((task) => task.priority == 'High').length,
+      'medium_priority': allTasks.where((task) => task.priority == 'Medium').length,
+      'low_priority': allTasks.where((task) => task.priority == 'Low').length,
+    };
+  }
+
   void resetTasks() async {
+    // Cancel semua notifikasi sebelum menghapus tasks
+    for (final task in tasks) {
+      _cancelNotifications(task.id);
+    }
+    
     await _taskBox.clear();
     notifyListeners();
   }
@@ -54,7 +101,9 @@ class TaskProvider with ChangeNotifier {
         desc.contains('presentasi') ||
         desc.contains('lomba') ||
         desc.contains('deadline') ||
-        desc.contains('tugas akhir');
+        desc.contains('tugas akhir') ||
+        desc.contains('penting') ||
+        desc.contains('urgent');
 
     if (isImportant || daysLeft <= 1) {
       return 'High';
@@ -66,6 +115,9 @@ class TaskProvider with ChangeNotifier {
   }
 
   void _scheduleNotifications(Task task) {
+    // Jangan jadwalkan notifikasi untuk tugas yang sudah selesai
+    if (task.isDone) return;
+    
     final now = DateTime.now();
 
     final oneDayBefore = task.deadline.subtract(const Duration(days: 1));
