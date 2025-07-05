@@ -72,32 +72,32 @@ class DashboardScreen extends StatelessWidget {
           letterSpacing: -0.5,
         ),
       ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: Color(0xFF64748B),
-              size: 22,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/settings');
-            },
-          ),
-        ),
-      ],
+      // actions: [
+      //   Container(
+      //     margin: const EdgeInsets.only(right: 16),
+      //     decoration: BoxDecoration(
+      //       color: Colors.white,
+      //       borderRadius: BorderRadius.circular(12),
+      //       boxShadow: [
+      //         BoxShadow(
+      //           color: Colors.black.withValues(alpha: 0.08),
+      //           blurRadius: 8,
+      //           offset: const Offset(0, 2),
+      //         ),
+      //       ],
+      //     ),
+      //     child: IconButton(
+      //       icon: const Icon(
+      //         Icons.settings_outlined,
+      //         color: Color(0xFF64748B),
+      //         size: 22,
+      //       ),
+      //       onPressed: () {
+      //         Navigator.pushNamed(context, '/settings');
+      //       },
+      //     ),
+      //   ),
+      // ],
     );
   }
 
